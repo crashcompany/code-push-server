@@ -9,7 +9,11 @@ To run the CodePush CLI, follow these steps:
 1. Clone the CodePush Service repository.
 1. Install the necessary dependencies by running `npm install`.
 1. Build the CLI by running `npm run build`.
-1. Install CLI globally by running `npm install -g`.
+1. ~~Install CLI globally by running `npm install -g`.~~
+    ```shell
+    # /usr/local/bin 디렉토리에 심볼릭 링크 생성 (대부분의 리눅스/맥 시스템에서 PATH에 포함되어 있음)
+    $ sudo ln -s "$(pwd)/bin/script/cli.js" /usr/local/bin/code-push-standalone
+    ```
 
 ## Getting started
 
