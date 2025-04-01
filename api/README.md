@@ -73,11 +73,11 @@ More detailed instructions on how to set up one can be found in the section [OAu
 2. Select subscription for deployment
    * `az account set --subscription <subscription-id>`
 3. Create resource group for CodePush resources: 
-   * `az group create --name <resource-group-name> --location <az-location eg. eastus>`
+   * `az group create --name code-push-server --location koreacentral`
    * 모든 Azure 리소스는 반드시 하나의 Resource Group에 속해야 함
    * Azure의 중요 개념; AWS에는 유사 개념 없음
 4. Deploy infrastructure using `codepush-infrastructure.bicep` with the next command
-   * `az deployment group create --resource-group <resource-group-name> --template-file ./codepush-infrastructure.bicep --parameters project_suffix=<project-suffix> az_location=<az-location eg. eastus> github_client_id=<github-client-id> github_client_secret=<github-client-secret> microsoft_client_id=<microsoft-client-id> microsoft_client_secret=<microsoft-client-secret>`
+   * `az deployment group create --resource-group code-push-server --template-file ./codepush-infrastructure.bicep --parameters project_suffix=crashco az_location=koreacentral github_client_id=Ov23liYmoMMEmKRh5gq5 github_client_secret=<github-client-secret> microsoft_client_id=<microsoft-client-id> microsoft_client_secret=<microsoft-client-secret>`
    * OAuth parameters (both GitHub and Microsoft) are optional. It is possible to specify them after the deployment in environment settings of Azure WebApp.
    * --parameters 이후의 것들은 전부 bicep 파일 내에 있는 param 변수들이다
       * 위와 같이 입력하지 않으면 CLI 통해서 어차피 다시 물어봄
