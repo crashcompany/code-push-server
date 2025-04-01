@@ -44,6 +44,20 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   kind: 'StorageV2'
 }
 
+resource redis 'Microsoft.Cache/Redis@2022-06-01' = {
+  name: 'redis-${project_suffix}'
+  location: az_location
+  properties: {
+    sku: {
+      name: 'Basic'
+      family: 'C'
+      capacity: 0
+    }
+    enableNonSslPort: false
+    minimumTlsVersion: '1.2'
+  }
+}
+
 resource webApp 'Microsoft.Web/sites@2022-03-01' = {
   name: webAppName
   location: az_location
@@ -66,6 +80,9 @@ resource webApp 'Microsoft.Web/sites@2022-03-01' = {
         { name: 'SERVER_URL', value: serverUrl }
         { name: 'CORS_ORIGIN', value: serverUrl }
         { name: 'LOGGING', value: logging ? 'true' : 'false' }
+        { name: 'REDIS_HOST', value: redis.properties.hostName }
+        { name: 'REDIS_PORT', value: '6380' }
+        { name: 'REDIS_KEY', value: redis.listKeys().primaryKey }
       ]
     }
   }
