@@ -66,15 +66,45 @@ More detailed instructions on how to set up one can be found in the section [OAu
 
 **NOTE** Please be aware of [project-suffix naming limitations](#project-suffix) for resources in Azure .
 
-1. Login to your Azure account: `az login`
-2. Select subscription for deployment: `az account set --subscription <subscription-id>`
-3. Create resource group for CodePush resources: `az group create --name <resource-group-name> --location <az-location eg. eastus>`
-4. Deploy infrastructure with the next command: `az deployment group create --resource-group <resource-group-name> --template-file ./codepush-infrastructure.bicep --parameters project_suffix=<project-suffix> az_location=<az-location eg. eastus> github_client_id=<github-client-id> github_client_secret=<github-client-secret> microsoft_client_id=<microsoft-client-id> microsoft_client_secret=<microsoft-client-secret>`. OAuth parameters (both GitHub and Microsoft) are optional. It is possible to specify them after the deployment in environment settings of Azure WebApp.
-5. Deploy CodePush to the Azure WebApp created during infrastructure deployment. Follow the Azure WebApp [official documentation](https://learn.microsoft.com/en-us/azure/app-service/) "Deployment and configuration" section for detailed instructions.
+0. Install Azure CLI
+   * `brew install azure-cli`
+1. Login to your Azure account
+   * `az login`
+2. Select subscription for deployment
+   * `az account set --subscription <subscription-id>`
+3. Create resource group for CodePush resources: 
+   * `az group create --name <resource-group-name> --location <az-location eg. eastus>`
+   * 모든 Azure 리소스는 반드시 하나의 Resource Group에 속해야 함
+   * Azure의 중요 개념; AWS에는 유사 개념 없음
+4. Deploy infrastructure using `codepush-infrastructure.bicep` with the next command
+   * `az deployment group create --resource-group <resource-group-name> --template-file ./codepush-infrastructure.bicep --parameters project_suffix=<project-suffix> az_location=<az-location eg. eastus> github_client_id=<github-client-id> github_client_secret=<github-client-secret> microsoft_client_id=<microsoft-client-id> microsoft_client_secret=<microsoft-client-secret>`
+   * OAuth parameters (both GitHub and Microsoft) are optional. It is possible to specify them after the deployment in environment settings of Azure WebApp.
+   * --parameters 이후의 것들은 전부 bicep 파일 내에 있는 param 변수들이다
+      * 위와 같이 입력하지 않으면 CLI 통해서 어차피 다시 물어봄
+   * 명령어를 중복 수행해도, 리소스 중복 생성에 대한 에러가 나지 않음
+5. Deploy CodePush to the Azure WebApp created during infrastructure deployment ➡️ See [Next Chapter](#deploy-codepush-to-the-azure-webapp-created-during-infrastructure-deployment)
 
 > **Warning!** The created Azure Blob Storage has default access settings. 
 > This means that all users within the subscription can access the storage account tables. 
 > Adjusting the storage account access settings to ensure proper security is the responsibility of the owner.
+
+## Deploy CodePush to the Azure WebApp created during infrastructure deployment
+
+>  Follow the Azure WebApp [official documentation](https://learn.microsoft.com/en-us/azure/app-service/) "Deployment and configuration" section for detailed instructions.
+
+0. 이미 위의 4단계에서 Azure WebApp이 생성됨
+1. 해당 프로젝트를 Azure WebApp의 Git Repo와 연결
+   * Azure Portal > App Services > 생성된 WebApp > Deployment > Deployment Center
+   * Source = Local Git
+   * Git Clone URI 확보
+2. Git push를 위한 credential (publishingUserName, publishingPassword) 확보
+   * `az webapp deployment list-publishing-credentials --name <web-app-name> --resource-group <resource-group-name>`
+3. Credential과 Clone URI를 이용해 remote 등록
+   * `git remote add azure https://<publishingUserName>:<publishingPassword>@<web-app-name>.scm.azurewebsites.net:443/<web-app-name>.git`
+   * list-publishing-credentials 에서 나온 `scmUri` 값은 정확하지 않음
+   * `$`로 시작하는 username을 remote에 추가시 `$` 앞에 `\`(backslash) 붙여야 함
+4. Push
+   * `git push azure main:master` (로컬의 main 브랜치를 리모트의 master 브랜치와 연결)
 
 ## Configure react-native-code-push
 
