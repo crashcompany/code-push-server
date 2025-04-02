@@ -9,11 +9,17 @@ To run the CodePush CLI, follow these steps:
 1. Clone the CodePush Service repository.
 1. Install the necessary dependencies by running `npm install`.
 1. Build the CLI by running `npm run build`.
-1. ~~Install CLI globally by running `npm install -g`.~~
+1. ~~Install CLI globally by running `npm install -g`~~ 로컬 환경에서 실행 가능하도록 설정
     ```shell
     # /usr/local/bin 디렉토리에 심볼릭 링크 생성 (대부분의 리눅스/맥 시스템에서 PATH에 포함되어 있음)
     $ sudo ln -s "$(pwd)/bin/script/cli.js" /usr/local/bin/code-push-standalone
     ```
+1. `code-push-standalone` 명령어 수행해보기
+1. Troubleshoot - Permission Denied 에러 뜨는 경우;
+    * /usr/local/bin/code-push-standalone에 x 권한이 있는지 확인
+    * ./bin/script/scli.js에 x 권한이 있는지 확인
+    * 없다면
+        * `chmod +x <권한-없는-파일-경로>`
 
 ## Getting started
 
@@ -144,15 +150,18 @@ you can run the following command:
 code-push-standalone app ls
 ```
 
-### App Collaboration
+### ⭐️ App Collaboration ⭐️
+> 중요: 각 개발자의 로컬 CLI에서 code-push 동작하도록 하기
 
-If you will be working with other developers on the same CodePush app, you can add them as collaborators using the following command:
+If you will be working with other developers on the same CodePush app, you can add them as collaborators through the following steps:
 
-```shell
-code-push-standalone collaborator add <appName> <collaboratorEmail>
-```
-
-_NOTE: This expects the developer to have already [registered](#account-creation) with CodePush using the specified e-mail address, so ensure that they have done that before attempting to share the app with them._
+0. 이미 각자의 컴퓨터에 code-push-standalone CLI가 설치되었다고 가정 (Otherwise see [here](#installation))
+1. 각자 > code-push 서버에 대해 로그인
+    * `code-push-standalone register <codePushServer-Url>`
+2. Code-push 서버의 주인 > 협업자 추가
+    * `code-push-standalone collaborator add <appName> <collaboratorEmail>`
+3. 각자 > code-push 서버에 접근 가능한지 확인
+    * `code-push-standalone deployment ls <appName>`
 
 Once added, all collaborators will immediately have the following permissions with regards to the newly shared app:
 
